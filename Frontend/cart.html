@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitVibe - Your Cart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #e6e6fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .cart-container {
+      background-color: #1f1f1f;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(177, 156, 217, 0.15);
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .cart-container h2 {
+      color: #b19cd9;
+      font-size: 2.2rem;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    #cart-items-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 30px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #333;
+      font-size: 1.1rem;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-details span {
+      margin-right: 20px;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: #a188c8;
+    }
+
+    .remove-btn {
+      background-color: transparent;
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .remove-btn:hover {
+      background-color: #e74c3c;
+      color: #1f1f1f;
+    }
+
+    #cart-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      padding-top: 20px;
+      border-top: 2px solid #b19cd9;
+      margin-bottom: 30px;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(to right, #b19cd9, #a188c8);
+      color: #121212;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+      background: linear-gradient(to right, #a188c8, #b19cd9);
+    }
+    
+    #empty-cart {
+      text-align: center;
+      color: #aaa;
+      font-size: 1.2rem;
+      margin-top: 40px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cart-container">
+    <h2>Your FitVibe Membership Cart</h2>
+
+    <ul id="cart-items-list">
+      </ul>
+
+    <div id="empty-cart">
+        Your cart is empty. <a href="pricing.html" style="color: #b19cd9; text-decoration: none;">Go back to Pricing.</a>
+    </div>
+
+    <div id="summary-section" style="display: none;">
+        <div id="cart-summary">
+            <span>Total:</span>
+            <span id="cart-total" class="item-price">0/-</span>
+        </div>
+        <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', renderCart);
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const list = document.getElementById("cart-items-list");
+      const summarySection = document.getElementById("summary-section");
+      const emptyMessage = document.getElementById("empty-cart");
+      const totalDisplay = document.getElementById("cart-total");
+      let total = 0;
+
+      list.innerHTML = ''; 
+
+      if (cart.length === 0) {
+        summarySection.style.display = 'none';
+        emptyMessage.style.display = 'block';
+        return;
+      }
+
+      emptyMessage.style.display = 'none';
+      
+      cart.forEach(item => {
+        // Remove non-numeric chars like '/-' before calculating total
+        const priceValue = parseInt(item.price.replace(/[^\d]/g, ''));
+        total += priceValue;
+
+        const listItem = document.createElement('li');
+        listItem.classList.add('cart-item');
+        listItem.innerHTML = `
+          <div class="item-details">
+            <span>${item.name}</span>
+            <span class="item-price">${item.price}</span>
+          </div>
+          <button class="remove-btn" onclick="removeFromCart('${item.name}')">Remove</button>
+        `;
+        list.appendChild(listItem);
+      });
+
+      totalDisplay.textContent = `${total}/-`;
+      summarySection.style.display = 'block';
+    }
+
+    function removeFromCart(name) {
+      // Assuming only one item, clear the entire cart for simplicity
+      if (confirm(`Are you sure you want to remove ${name} from your cart?`)) {
+          localStorage.removeItem("cart");
+          renderCart(); // Re-render the cart UI
+      }
+    }
+
+    function checkout() {
+      // Redirect to payment page
+      window.location.href = "payment.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitVibe - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* (PASTE YOUR FULL CSS FROM THE PREVIOUS HTML HERE) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a0d1a 50%, #0d0d1a 100%); 
+            color: #f2e6ff; display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; overflow: hidden;
+        }
+        /* Your background animations and styles here */
+        body::before { /* Animated Background Gradients */
+            content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(218, 112, 214, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(192, 132, 252, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(167, 139, 250, 0.1) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite; z-index: -2;
+        }
+        @keyframes gradientShift { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(10%, 10%) rotate(120deg); } 66% { transform: translate(-10%, 10%) rotate(240deg); } }
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .auth-container {
+            background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(30px);
+            padding: 40px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+            width: 90%; max-width: 400px; text-align: center;
+            border: 1px solid rgba(192, 132, 252, 0.3); animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .auth-container h2 {
+            font-size: 2rem; margin-bottom: 25px;
+            background: linear-gradient(45deg, #DA70D6, #C084FC);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .form-group { margin-bottom: 20px; text-align: left; position: relative; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #C084FC; }
+        .form-group input {
+            width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(192, 132, 252, 0.4); border-radius: 10px;
+            color: #f2e6ff; font-size: 1rem; transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none; border-color: #DA70D6; box-shadow: 0 0 10px rgba(218, 112, 214, 0.5);
+        }
+        .message { margin-top: 15px; font-weight: 600; min-height: 20px; }
+        .message.success { color: #4CAF50; }
+        .message.error { color: #f44336; }
+        .btn-full {
+            width: 100%; margin-top: 15px;
+            padding: 14px; font-size: 1.1rem; font-weight: 700; border: none;
+            border-radius: 10px; cursor: pointer; transition: all 0.3s ease;
+            text-transform: uppercase; letter-spacing: 1px;
+            background: linear-gradient(135deg, #C084FC, #DA70D6); color: white;
+            box-shadow: 0 5px 20px rgba(192, 132, 252, 0.4);
+        }
+        .btn-full:hover {
+            transform: translateY(-3px); box-shadow: 0 10px 30px rgba(192, 132, 252, 0.6);
+            background: linear-gradient(135deg, #DA70D6, #E0B0FF);
+        }
+        .link-text { margin-top: 20px; font-size: 0.9rem; }
+        .link-text a { color: #C084FC; text-decoration: none; font-weight: 600; transition: color 0.3s; }
+        .link-text a:hover { color: #DA70D6; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2><i class="fas fa-sign-in-alt"></i> Login to FitVibe</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required placeholder="Enter your password">
+            </div>
+            
+            <button type="submit" class="btn-full"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <div id="login-message" class="message"></div>
+        </form>
+        <div class="link-text">
+            Don't have an account? <a href="signup.html">Sign Up here</a>
+        </div>
+    </div>
+
+    <canvas id="particles-canvas"></canvas>
+    <script>
+        const BACKEND_URL = 'http://localhost:5000'; // Match your server.js port
+
+        document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+        // Helper function to save auth data and redirect
+        const saveAuthData = (token, user) => {
+            // Save the JWT token and basic user info
+            localStorage.setItem('token', token);
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            // You can also set a flag, but the token is the primary check
+            localStorage.setItem('isLoggedIn', 'true'); 
+            
+            console.log('Login Successful. Token and user data saved.');
+            
+            // Redirect to the home page or dashboard
+            window.location.href = 'FitVibe.html'; 
+        };
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageElement = document.getElementById('login-message');
+
+            messageElement.textContent = 'Authenticating...';
+            messageElement.className = 'message';
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageElement.className = 'message success';
+                    messageElement.textContent = 'Login successful! Redirecting...';
+                    
+                    // Success: Save data and redirect
+                    saveAuthData(data.token, data.user);
+                    
+                } else {
+                    // Failure (e.g., 400 Bad Request - Invalid credentials)
+                    messageElement.className = 'message error';
+                    messageElement.textContent = data.msg || 'Login failed. Check your credentials.';
+                }
+
+            } catch (error) {
+                console.error('Network or server error:', error);
+                messageElement.className = 'message error';
+                messageElement.textContent = 'Could not connect to the FitVibe server.';
+            }
+        }
+        
+        // --- Particle Background Script (same as signup.html) ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 10000;
+            const colors = ['rgba(218, 112, 214, 0.4)', 'rgba(192, 132, 252, 0.4)', 'rgba(167, 139, 250, 0.4)'];
+
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = Math.random() * 3 + 1;
+                let x = Math.random() * (window.innerWidth - size * 2) + size;
+                let y = Math.random() * (window.innerHeight - size * 2) + size;
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                particles.push({ x, y, directionX, directionY, size, color });
+            }
+        }
+
+        function drawParticle(particle) {
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2, false);
+            ctx.fillStyle = particle.color;
+            ctx.fill();
+        }
+
+        function updateParticle(particle) {
+            if (particle.x > canvas.width || particle.x < 0) { particle.directionX = -particle.directionX; }
+            if (particle.y > canvas.height || particle.y < 0) { particle.directionY = -particle.directionY; }
+
+            let dx = mouse.x - particle.x;
+            let dy = mouse.y - particle.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < mouse.radius + particle.size) {
+                let forceFactor = (mouse.radius / distance) * 0.1;
+                particle.x -= dx * forceFactor;
+                particle.y -= dy * forceFactor;
+            }
+
+            particle.x += particle.directionX;
+            particle.y += particle.directionY;
+            drawParticle(particle);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            particles.forEach(updateParticle);
+        }
+        
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('resize', initParticles);
+
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
