@@ -84,10 +84,10 @@ const Home = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <GalleryCard icon={<FaGamepad />} title="Gamified Challenge" image={gameImage} link="/game" index={0} />
                 <GalleryCard icon={<FaBrain />} title="Mindfulness" image={mindImage} link="/mindfulness" index={1} />
-                <GalleryCard icon={<FaDumbbell />} title="Push-up Tracker" image={pushupImage} link="/pushup-tracker" index={2} />
+                <GalleryCard icon={<FaDumbbell />} title="Push-up Tracker" image={pushupImage} link="/pushup" index={2} />
                 <GalleryCard icon={<FaSpa />} title="Yoga" image={yogaImage} link="/yoga" index={3} />
                 <GalleryCard icon={<FaMusic />} title="Zumba" image={zumbaImage} link="/zumba" index={4} />
-                <GalleryCard icon={<FaRobot />} title="AI Workout Plan" image={planImage} link="/workout-ai" index={5} />
+                <GalleryCard icon={<FaRobot />} title="AI Workout Plan" image={planImage} link="/workout" index={5} />
             </div>
 
             {/* "One Membership" Section */}

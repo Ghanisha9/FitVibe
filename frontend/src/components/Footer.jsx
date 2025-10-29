@@ -24,7 +24,7 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} FitVibe. All rights reserved.
         </p>
         <p className="text-xs mt-1">
-          Made with <span className="text-pink-500">&hearts;</span> in Kurukshetra
+          Empowering wellness through technology and innovation.
         </p>
       </div>
     </footer>
