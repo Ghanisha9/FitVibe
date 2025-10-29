@@ -93,9 +93,9 @@ const Home = () => {
             {/* "One Membership" Section */}
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 my-16 py-12 bg-gray-900/50 backdrop-blur-md rounded-2xl text-center border border-purple-500/20 shadow-xl">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6 text-purple-300 flex items-center justify-center gap-4">
-                    <FaStar className="text-yellow-400" />
+                    
                     One membership for all your fitness needs!
-                    <FaStar className="text-yellow-400" />
+                    
                 </h2>
                 <button
                     onClick={getStarted}
